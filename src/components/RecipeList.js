@@ -1,14 +1,19 @@
 import "./RecipeList.css";
 import { Link } from "react-router-dom";
 import { useTheme } from "../hook/useTheme";
+import Trashcan from "../assets/trashcan.svg";
+import { projectFirestore } from "../firebase/config";
 
 const RecipeList = ({ recipes }) => {
+  const { mode } = useTheme();
 
-  const {mode} = useTheme();
-
-  if(recipes.length ===0){
-    return <div className="error">No recipes to load...</div>
+  if (recipes.length === 0) {
+    return <div className="error">No recipes to load...</div>;
   }
+
+  const handleClick = (id) => {
+    projectFirestore.collection("recipes").doc(id).delete();
+  };
 
   return (
     <div className="recipe-list">
@@ -18,6 +23,12 @@ const RecipeList = ({ recipes }) => {
           <p>{recipe.cookingTime} to make</p>
           <div>{recipe.method.substring(0, 100)}...</div>
           <Link to={`/recipe/${recipe.id}`}>Cook this</Link>
+          <img
+            className="delete"
+            src={Trashcan}
+            alt="delete"
+            onClick={() => handleClick(recipe.id)}
+          />
         </div>
       ))}
     </div>
